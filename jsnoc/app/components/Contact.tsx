@@ -155,9 +155,28 @@ export default function Contact() {
     setSubmitStatus(null);
     
     try {
-      // Simulate API call - replace with your actual submission
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      console.log("Form submitted:", formData);
+      // Send data to your API endpoint
+      const response = await fetch('/api/send-mail', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          company: formData.company,
+          name: formData.name,
+          phone: formData.phone,
+          email: formData.email,
+          message: formData.message,
+          captchaInput: formData.captchaInput,
+          captchaCode: captchaCode, // Send the current CAPTCHA code for server validation
+        }),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.error || 'Failed to send message');
+      }
       
       // Reset form on success
       setFormData({
@@ -172,7 +191,7 @@ export default function Contact() {
       
       setSubmitStatus({ 
         type: 'success', 
-        message: t('contact.form.success') || "Message sent successfully!" 
+        message: t('contact.form.success') || "Message sent successfully! We'll get back to you soon." 
       });
       
       // Generate new CAPTCHA
@@ -183,7 +202,7 @@ export default function Contact() {
       console.error('Submission error:', error);
       setSubmitStatus({ 
         type: 'error', 
-        message: t('contact.form.error') || "Failed to send message. Please try again." 
+        message: error instanceof Error ? error.message : (t('contact.form.error') || "Failed to send message. Please try again.") 
       });
     } finally {
       setIsSubmitting(false);
@@ -366,8 +385,8 @@ export default function Contact() {
                           : 'border-[#1E90FF]/10'
                       }`}
                     />
-                                    {/* Checkmark or X icon */}
-                                    {formData.captchaInput.length > 0 && (
+                    {/* Checkmark or X icon */}
+                    {formData.captchaInput.length > 0 && (
                       <div className="absolute right-2 top-1/2 -translate-y-1/2">
                         {captchaValid ? (
                           <Check className="text-green-500" size={16} />

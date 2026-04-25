@@ -128,6 +128,20 @@ const translations: Translations = {
   },
   'contact.form.captcha': { EN: 'Enter code', KR: '코드 입력' },
   'contact.form.submit': { EN: 'SUBMIT', KR: '제출하기' },
+  
+  // ============ CONTACT FORM STATUS MESSAGES (ADDED) ============
+  'contact.form.success': { 
+    EN: 'Message sent successfully! We\'ll get back to you soon.', 
+    KR: '메시지가 성공적으로 전송되었습니다! 곧 연락드리겠습니다.' 
+  },
+  'contact.form.error': { 
+    EN: 'Failed to send message. Please try again.', 
+    KR: '메시지 전송에 실패했습니다. 다시 시도해 주세요.' 
+  },
+  'contact.form.acceptTermsError': { 
+    EN: 'Please accept the terms and conditions', 
+    KR: '이용약관에 동의해 주세요' 
+  },
 
   // ============ CTA SECTION ============
   'cta.title': { EN: 'Prefer a call?', KR: '전화가 더 편하신가요?' },
