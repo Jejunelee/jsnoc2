@@ -10,9 +10,20 @@ export default function Hero() {
   const [isVisible, setIsVisible] = useState(false);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const heroRef = useRef<HTMLElement>(null);
+  const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
 
   useEffect(() => {
     setIsVisible(true);
+
+    const updateDimensions = () => {
+      setDimensions({
+        width: window.innerWidth,
+        height: window.innerHeight,
+      });
+    };
+
+    updateDimensions();
+    window.addEventListener('resize', updateDimensions);
 
     const handleMouseMove = (e: MouseEvent) => {
       if (heroRef.current) {
@@ -33,8 +44,33 @@ export default function Hero() {
       if (heroElement) {
         heroElement.removeEventListener("mousemove", handleMouseMove);
       }
+      window.removeEventListener('resize', updateDimensions);
     };
   }, []);
+
+  // Calculate responsive positions
+  const getPosition = (percentage: number) => `${percentage}%`;
+  
+  // Define circuit paths relative to viewport
+  const circuitPaths = {
+    left: {
+      short1: `M 0 ${dimensions.height * 0.15} L ${dimensions.width * 0.06} ${dimensions.height * 0.15} L ${dimensions.width * 0.08} ${dimensions.height * 0.12} L ${dimensions.width * 0.11} ${dimensions.height * 0.12}`,
+      long1: `M 0 ${dimensions.height * 0.3} L ${dimensions.width * 0.09} ${dimensions.height * 0.3} L ${dimensions.width * 0.11} ${dimensions.height * 0.26} L ${dimensions.width * 0.18} ${dimensions.height * 0.26} L ${dimensions.width * 0.21} ${dimensions.height * 0.22} L ${dimensions.width * 0.27} ${dimensions.height * 0.22}`,
+      medium1: `M 0 ${dimensions.height * 0.5} L ${dimensions.width * 0.1} ${dimensions.height * 0.5} L ${dimensions.width * 0.13} ${dimensions.height * 0.45} L ${dimensions.width * 0.2} ${dimensions.height * 0.45}`,
+      branch1: `M ${dimensions.width * 0.13} ${dimensions.height * 0.45} L ${dimensions.width * 0.13} ${dimensions.height * 0.4} L ${dimensions.width * 0.17} ${dimensions.height * 0.4}`,
+      xlong1: `M 0 ${dimensions.height * 0.7} L ${dimensions.width * 0.08} ${dimensions.height * 0.7} L ${dimensions.width * 0.1} ${dimensions.height * 0.65} L ${dimensions.width * 0.16} ${dimensions.height * 0.65} L ${dimensions.width * 0.18} ${dimensions.height * 0.6} L ${dimensions.width * 0.25} ${dimensions.height * 0.6} L ${dimensions.width * 0.28} ${dimensions.height * 0.55} L ${dimensions.width * 0.34} ${dimensions.height * 0.55}`,
+      vertical1: `M ${dimensions.width * 0.03} ${dimensions.height * 0.85} L ${dimensions.width * 0.03} ${dimensions.height * 0.78} L ${dimensions.width * 0.05} ${dimensions.height * 0.73}`,
+    },
+    right: {
+      short1: `M ${dimensions.width} ${dimensions.height * 0.18} L ${dimensions.width * 0.94} ${dimensions.height * 0.18} L ${dimensions.width * 0.92} ${dimensions.height * 0.14} L ${dimensions.width * 0.88} ${dimensions.height * 0.14}`,
+      long1: `M ${dimensions.width} ${dimensions.height * 0.35} L ${dimensions.width * 0.91} ${dimensions.height * 0.35} L ${dimensions.width * 0.89} ${dimensions.height * 0.3} L ${dimensions.width * 0.82} ${dimensions.height * 0.3} L ${dimensions.width * 0.8} ${dimensions.height * 0.25} L ${dimensions.width * 0.73} ${dimensions.height * 0.25}`,
+      medium1: `M ${dimensions.width} ${dimensions.height * 0.55} L ${dimensions.width * 0.91} ${dimensions.height * 0.55} L ${dimensions.width * 0.89} ${dimensions.height * 0.5} L ${dimensions.width * 0.82} ${dimensions.height * 0.5}`,
+      xlong1: `M ${dimensions.width} ${dimensions.height * 0.75} L ${dimensions.width * 0.93} ${dimensions.height * 0.75} L ${dimensions.width * 0.9} ${dimensions.height * 0.7} L ${dimensions.width * 0.85} ${dimensions.height * 0.7} L ${dimensions.width * 0.82} ${dimensions.height * 0.65} L ${dimensions.width * 0.76} ${dimensions.height * 0.65}`,
+      branch1: `M ${dimensions.width * 0.9} ${dimensions.height * 0.7} L ${dimensions.width * 0.9} ${dimensions.height * 0.65} L ${dimensions.width * 0.86} ${dimensions.height * 0.65}`,
+      decorative1: `M ${dimensions.width} ${dimensions.height * 0.45} L ${dimensions.width * 0.96} ${dimensions.height * 0.45} L ${dimensions.width * 0.94} ${dimensions.height * 0.4} L ${dimensions.width * 0.88} ${dimensions.height * 0.4}`,
+      vertical1: `M ${dimensions.width * 0.97} ${dimensions.height * 0.88} L ${dimensions.width * 0.97} ${dimensions.height * 0.8} L ${dimensions.width * 0.95} ${dimensions.height * 0.75} L ${dimensions.width * 0.95} ${dimensions.height * 0.68} L ${dimensions.width * 0.92} ${dimensions.height * 0.63}`,
+    },
+  };
 
   return (
     <section
@@ -44,8 +80,13 @@ export default function Hero() {
       {/* Black Gradient from Bottom to Middle */}
       <div className="absolute inset-0 bg-gradient-to-t from-black via-black/70 to-transparent pointer-events-none" />
       
-      {/* Animated Circuit Lines - Start invisible, trace in, stay glowing */}
-      <svg className="absolute inset-0 w-full h-full opacity-30" xmlns="http://www.w3.org/2000/svg">
+      {/* Animated Circuit Lines - Responsive SVG */}
+      <svg 
+        className="absolute inset-0 w-full h-full opacity-30" 
+        xmlns="http://www.w3.org/2000/svg"
+        preserveAspectRatio="none"
+        viewBox={`0 0 ${dimensions.width || 1920} ${dimensions.height || 1080}`}
+      >
         <defs>
           <linearGradient id="circuitGradient" x1="0%" y1="0%" x2="100%" y2="100%">
             <stop offset="0%" stopColor="#1E90FF" />
@@ -73,55 +114,63 @@ export default function Hero() {
           </filter>
         </defs>
         
-        {/* LEFT SIDE CIRCUIT LINES - Different lengths */}
-        {/* Short line - Top left */}
-        <path d="M0 150 L120 150 L160 110 L220 110" stroke="url(#circuitGradient)" strokeWidth="2" fill="none" filter="url(#strongGlow)" className="animate-drawLine-short" style={{ strokeDashoffset: 500, strokeDasharray: 500 }} />
-        <circle cx="220" cy="110" r="4" fill="#1E90FF" filter="url(#strongGlow)" className="animate-pulse-glow" style={{ opacity: 0 }} />
-        
-        {/* Long line - Upper middle left */}
-        <path d="M0 300 L180 300 L220 260 L350 260 L400 210 L520 210" stroke="url(#circuitGradient)" strokeWidth="2" fill="none" filter="url(#strongGlow)" className="animate-drawLine-long animation-delay-800" style={{ strokeDashoffset: 1200, strokeDasharray: 1200 }} />
-        <circle cx="520" cy="210" r="4" fill="#6EC1FF" filter="url(#strongGlow)" className="animate-pulse-glow animation-delay-300" style={{ opacity: 0 }} />
-        
-        {/* Medium line with branch - Middle left */}
-        <path d="M0 500 L200 500 L250 450 L380 450" stroke="url(#circuitGradient)" strokeWidth="2" fill="none" filter="url(#strongGlow)" className="animate-drawLine-medium animation-delay-1500" style={{ strokeDashoffset: 800, strokeDasharray: 800 }} />
-        <path d="M250 450 L250 400 L320 400" stroke="url(#circuitGradient)" strokeWidth="1.5" fill="none" filter="url(#glow)" className="animate-drawLine-short animation-delay-1700" style={{ strokeDashoffset: 500, strokeDasharray: 500 }} />
-        <circle cx="380" cy="450" r="4" fill="#1E90FF" filter="url(#strongGlow)" className="animate-pulse-glow animation-delay-700" style={{ opacity: 0 }} />
-        <circle cx="320" cy="400" r="3" fill="#6EC1FF" filter="url(#glow)" className="animate-pulse-glow animation-delay-900" style={{ opacity: 0 }} />
-        
-        {/* Extra long line - Bottom left */}
-        <path d="M0 700 L150 700 L200 650 L300 650 L350 600 L480 600 L530 550 L650 550" stroke="url(#circuitGradient)" strokeWidth="2" fill="none" filter="url(#strongGlow)" className="animate-drawLine-xlong animation-delay-2200" style={{ strokeDashoffset: 1800, strokeDasharray: 1800 }} />
-        <circle cx="650" cy="550" r="5" fill="#1E90FF" filter="url(#strongGlow)" className="animate-pulse-glow animation-delay-1100" style={{ opacity: 0 }} />
-        
-        {/* Short vertical line - Far left */}
-        <path d="M50 850 L50 780 L100 730" stroke="url(#circuitGradient)" strokeWidth="1.5" fill="none" filter="url(#glow)" className="animate-drawLine-short animation-delay-2800" style={{ strokeDashoffset: 500, strokeDasharray: 500 }} />
-        <circle cx="100" cy="730" r="3" fill="#6EC1FF" filter="url(#glow)" className="animate-pulse-glow animation-delay-1400" style={{ opacity: 0 }} />
+        {/* LEFT SIDE CIRCUIT LINES */}
+        {dimensions.width > 0 && (
+          <>
+            {/* Short line - Top left */}
+            <path d={circuitPaths.left.short1} stroke="url(#circuitGradient)" strokeWidth="2" fill="none" filter="url(#strongGlow)" className="animate-drawLine-short" style={{ strokeDashoffset: 500, strokeDasharray: 500 }} />
+            <circle cx={dimensions.width * 0.11} cy={dimensions.height * 0.12} r="4" fill="#1E90FF" filter="url(#strongGlow)" className="animate-pulse-glow" style={{ opacity: 0 }} />
+            
+            {/* Long line - Upper middle left */}
+            <path d={circuitPaths.left.long1} stroke="url(#circuitGradient)" strokeWidth="2" fill="none" filter="url(#strongGlow)" className="animate-drawLine-long animation-delay-800" style={{ strokeDashoffset: 1200, strokeDasharray: 1200 }} />
+            <circle cx={dimensions.width * 0.27} cy={dimensions.height * 0.22} r="4" fill="#6EC1FF" filter="url(#strongGlow)" className="animate-pulse-glow animation-delay-300" style={{ opacity: 0 }} />
+            
+            {/* Medium line with branch - Middle left */}
+            <path d={circuitPaths.left.medium1} stroke="url(#circuitGradient)" strokeWidth="2" fill="none" filter="url(#strongGlow)" className="animate-drawLine-medium animation-delay-1500" style={{ strokeDashoffset: 800, strokeDasharray: 800 }} />
+            <path d={circuitPaths.left.branch1} stroke="url(#circuitGradient)" strokeWidth="1.5" fill="none" filter="url(#glow)" className="animate-drawLine-short animation-delay-1700" style={{ strokeDashoffset: 500, strokeDasharray: 500 }} />
+            <circle cx={dimensions.width * 0.2} cy={dimensions.height * 0.45} r="4" fill="#1E90FF" filter="url(#strongGlow)" className="animate-pulse-glow animation-delay-700" style={{ opacity: 0 }} />
+            <circle cx={dimensions.width * 0.17} cy={dimensions.height * 0.4} r="3" fill="#6EC1FF" filter="url(#glow)" className="animate-pulse-glow animation-delay-900" style={{ opacity: 0 }} />
+            
+            {/* Extra long line - Bottom left */}
+            <path d={circuitPaths.left.xlong1} stroke="url(#circuitGradient)" strokeWidth="2" fill="none" filter="url(#strongGlow)" className="animate-drawLine-xlong animation-delay-2200" style={{ strokeDashoffset: 1800, strokeDasharray: 1800 }} />
+            <circle cx={dimensions.width * 0.34} cy={dimensions.height * 0.55} r="5" fill="#1E90FF" filter="url(#strongGlow)" className="animate-pulse-glow animation-delay-1100" style={{ opacity: 0 }} />
+            
+            {/* Short vertical line - Far left */}
+            <path d={circuitPaths.left.vertical1} stroke="url(#circuitGradient)" strokeWidth="1.5" fill="none" filter="url(#glow)" className="animate-drawLine-short animation-delay-2800" style={{ strokeDashoffset: 500, strokeDasharray: 500 }} />
+            <circle cx={dimensions.width * 0.05} cy={dimensions.height * 0.73} r="3" fill="#6EC1FF" filter="url(#glow)" className="animate-pulse-glow animation-delay-1400" style={{ opacity: 0 }} />
+          </>
+        )}
 
-        {/* RIGHT SIDE CIRCUIT LINES - Different lengths, mirrored but varied */}
-        {/* Short line - Top right */}
-        <path d="M1920 180 L1800 180 L1760 140 L1700 140" stroke="url(#circuitGradientRight)" strokeWidth="2" fill="none" filter="url(#strongGlow)" className="animate-drawLine-short" style={{ strokeDashoffset: 500, strokeDasharray: 500 }} />
-        <circle cx="1700" cy="140" r="4" fill="#1E90FF" filter="url(#strongGlow)" className="animate-pulse-glow" style={{ opacity: 0 }} />
-        
-        {/* Long line with curve - Upper middle right */}
-        <path d="M1920 350 L1750 350 L1700 300 L1580 300 L1530 250 L1400 250" stroke="url(#circuitGradientRight)" strokeWidth="2" fill="none" filter="url(#strongGlow)" className="animate-drawLine-long animation-delay-1000" style={{ strokeDashoffset: 1200, strokeDasharray: 1200 }} />
-        <circle cx="1400" cy="250" r="4" fill="#6EC1FF" filter="url(#strongGlow)" className="animate-pulse-glow animation-delay-500" style={{ opacity: 0 }} />
-        
-        {/* Medium line - Middle right */}
-        <path d="M1920 550 L1750 550 L1700 500 L1570 500" stroke="url(#circuitGradientRight)" strokeWidth="2" fill="none" filter="url(#strongGlow)" className="animate-drawLine-medium animation-delay-1800" style={{ strokeDashoffset: 800, strokeDasharray: 800 }} />
-        <circle cx="1570" cy="500" r="4" fill="#1E90FF" filter="url(#strongGlow)" className="animate-pulse-glow animation-delay-900" style={{ opacity: 0 }} />
-        
-        {/* Extra long line with branch - Bottom right */}
-        <path d="M1920 750 L1780 750 L1730 700 L1630 700 L1580 650 L1450 650" stroke="url(#circuitGradientRight)" strokeWidth="2" fill="none" filter="url(#strongGlow)" className="animate-drawLine-xlong animation-delay-2500" style={{ strokeDashoffset: 1800, strokeDasharray: 1800 }} />
-        <path d="M1730 700 L1730 650 L1650 650" stroke="url(#circuitGradientRight)" strokeWidth="1.5" fill="none" filter="url(#glow)" className="animate-drawLine-short animation-delay-2700" style={{ strokeDashoffset: 500, strokeDasharray: 500 }} />
-        <circle cx="1450" cy="650" r="5" fill="#6EC1FF" filter="url(#strongGlow)" className="animate-pulse-glow animation-delay-1200" style={{ opacity: 0 }} />
-        <circle cx="1650" cy="650" r="3" fill="#1E90FF" filter="url(#glow)" className="animate-pulse-glow animation-delay-1400" style={{ opacity: 0 }} />
-        
-        {/* Vertical complex line - Far right */}
-        <path d="M1870 880 L1870 800 L1820 750 L1820 680 L1770 630" stroke="url(#circuitGradientRight)" strokeWidth="1.5" fill="none" filter="url(#glow)" className="animate-drawLine-medium animation-delay-3000" style={{ strokeDashoffset: 800, strokeDasharray: 800 }} />
-        <circle cx="1770" cy="630" r="3" fill="#6EC1FF" filter="url(#glow)" className="animate-pulse-glow animation-delay-1500" style={{ opacity: 0 }} />
-        
-        {/* Additional decorative line - Right side */}
-        <path d="M1920 450 L1850 450 L1800 400 L1680 400" stroke="url(#circuitGradientRight)" strokeWidth="1.5" fill="none" filter="url(#glow)" className="animate-drawLine-short animation-delay-1200" style={{ strokeDashoffset: 500, strokeDasharray: 500 }} />
-        <circle cx="1680" cy="400" r="3" fill="#1E90FF" filter="url(#glow)" className="animate-pulse-glow animation-delay-600" style={{ opacity: 0 }} />
+        {/* RIGHT SIDE CIRCUIT LINES */}
+        {dimensions.width > 0 && (
+          <>
+            {/* Short line - Top right */}
+            <path d={circuitPaths.right.short1} stroke="url(#circuitGradientRight)" strokeWidth="2" fill="none" filter="url(#strongGlow)" className="animate-drawLine-short" style={{ strokeDashoffset: 500, strokeDasharray: 500 }} />
+            <circle cx={dimensions.width * 0.88} cy={dimensions.height * 0.14} r="4" fill="#1E90FF" filter="url(#strongGlow)" className="animate-pulse-glow" style={{ opacity: 0 }} />
+            
+            {/* Long line with curve - Upper middle right */}
+            <path d={circuitPaths.right.long1} stroke="url(#circuitGradientRight)" strokeWidth="2" fill="none" filter="url(#strongGlow)" className="animate-drawLine-long animation-delay-1000" style={{ strokeDashoffset: 1200, strokeDasharray: 1200 }} />
+            <circle cx={dimensions.width * 0.73} cy={dimensions.height * 0.25} r="4" fill="#6EC1FF" filter="url(#strongGlow)" className="animate-pulse-glow animation-delay-500" style={{ opacity: 0 }} />
+            
+            {/* Medium line - Middle right */}
+            <path d={circuitPaths.right.medium1} stroke="url(#circuitGradientRight)" strokeWidth="2" fill="none" filter="url(#strongGlow)" className="animate-drawLine-medium animation-delay-1800" style={{ strokeDashoffset: 800, strokeDasharray: 800 }} />
+            <circle cx={dimensions.width * 0.82} cy={dimensions.height * 0.5} r="4" fill="#1E90FF" filter="url(#strongGlow)" className="animate-pulse-glow animation-delay-900" style={{ opacity: 0 }} />
+            
+            {/* Extra long line with branch - Bottom right */}
+            <path d={circuitPaths.right.xlong1} stroke="url(#circuitGradientRight)" strokeWidth="2" fill="none" filter="url(#strongGlow)" className="animate-drawLine-xlong animation-delay-2500" style={{ strokeDashoffset: 1800, strokeDasharray: 1800 }} />
+            <path d={circuitPaths.right.branch1} stroke="url(#circuitGradientRight)" strokeWidth="1.5" fill="none" filter="url(#glow)" className="animate-drawLine-short animation-delay-2700" style={{ strokeDashoffset: 500, strokeDasharray: 500 }} />
+            <circle cx={dimensions.width * 0.76} cy={dimensions.height * 0.65} r="5" fill="#6EC1FF" filter="url(#strongGlow)" className="animate-pulse-glow animation-delay-1200" style={{ opacity: 0 }} />
+            <circle cx={dimensions.width * 0.86} cy={dimensions.height * 0.65} r="3" fill="#1E90FF" filter="url(#glow)" className="animate-pulse-glow animation-delay-1400" style={{ opacity: 0 }} />
+            
+            {/* Additional decorative line - Right side */}
+            <path d={circuitPaths.right.decorative1} stroke="url(#circuitGradientRight)" strokeWidth="1.5" fill="none" filter="url(#glow)" className="animate-drawLine-short animation-delay-1200" style={{ strokeDashoffset: 500, strokeDasharray: 500 }} />
+            <circle cx={dimensions.width * 0.88} cy={dimensions.height * 0.4} r="3" fill="#1E90FF" filter="url(#glow)" className="animate-pulse-glow animation-delay-600" style={{ opacity: 0 }} />
+            
+            {/* Vertical complex line - Far right */}
+            <path d={circuitPaths.right.vertical1} stroke="url(#circuitGradientRight)" strokeWidth="1.5" fill="none" filter="url(#glow)" className="animate-drawLine-medium animation-delay-3000" style={{ strokeDashoffset: 800, strokeDasharray: 800 }} />
+            <circle cx={dimensions.width * 0.92} cy={dimensions.height * 0.63} r="3" fill="#6EC1FF" filter="url(#glow)" className="animate-pulse-glow animation-delay-1500" style={{ opacity: 0 }} />
+          </>
+        )}
       </svg>
 
       {/* Mouse Following Glow - Neon Blue */}
