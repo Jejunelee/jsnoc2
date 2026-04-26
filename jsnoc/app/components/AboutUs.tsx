@@ -1,11 +1,13 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useLanguage } from "@/app/LanguageContext"; // Adjust the import path as needed
 
 export default function AboutUs() {
   const sectionRef = useRef<HTMLElement | null>(null);
   const [hasGlitched, setHasGlitched] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
+  const { t, language } = useLanguage(); // Add this line
 
   useEffect(() => {
     const section = sectionRef.current;
@@ -44,15 +46,12 @@ export default function AboutUs() {
 
       <div className="container relative z-10 mx-auto px-4 sm:px-6 lg:px-8 text-center">
         <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-[#E6F0FF] mb-4 glitch-text">
-          About Us
+          {t('about.title')}
         </h2>
 
         {/* Original short paragraph - always visible */}
         <p className="max-w-3xl mx-auto text-[#E6F0FF]/70 text-base leading-relaxed mb-6 glitch-text">
-          JS Network Operations is a team of professionals that provides IT support 
-          services and network-related solutions nationwide. We are committed to 
-          understanding our customers' needs and providing the necessary services 
-          in a timely manner.
+          {t('about.short')}
         </p>
 
         {/* Collapsible Content - Three detailed sections with icons */}
@@ -72,9 +71,9 @@ export default function AboutUs() {
                   </svg>
                 </div>
                 <div>
-                  <h3 className="text-[#1E90FF] font-semibold mb-1 text-lg">Professional & Clean</h3>
+                  <h3 className="text-[#1E90FF] font-semibold mb-1 text-lg">{t('about.professional.title')}</h3>
                   <p className="text-[#E6F0FF]/70 text-sm leading-relaxed">
-                    JS Network Operations (JSNOC) delivers reliable, end-to-end IT field engineering and technical support services across South Korea. We specialize in network infrastructure, on-site/remote troubleshooting, enterprise device deployment, and critical system maintenance for retail, corporate, and industrial environments.
+                    {t('about.professional.desc')}
                   </p>
                 </div>
               </div>
@@ -89,9 +88,9 @@ export default function AboutUs() {
                   </svg>
                 </div>
                 <div>
-                  <h3 className="text-[#1E90FF] font-semibold mb-1 text-lg">Straightforward & Practical</h3>
+                  <h3 className="text-[#1E90FF] font-semibold mb-1 text-lg">{t('about.practical.title')}</h3>
                   <p className="text-[#E6F0FF]/70 text-sm leading-relaxed">
-                    We keep your business connected by providing on-site IT support, network installation, hardware setup, and troubleshooting services across Korea—quickly and professionally. Whether you need help with servers, networking, POS systems, CCTV, or end-user devices, our field engineers deliver reliable solutions you can trust.
+                    {t('about.practical.desc')}
                   </p>
                 </div>
               </div>
@@ -106,9 +105,9 @@ export default function AboutUs() {
                   </svg>
                 </div>
                 <div>
-                  <h3 className="text-[#1E90FF] font-semibold mb-1 text-lg">Modern & Tech-Focused</h3>
+                  <h3 className="text-[#1E90FF] font-semibold mb-1 text-lg">{t('about.modern.title')}</h3>
                   <p className="text-[#E6F0FF]/70 text-sm leading-relaxed">
-                    A modern IT services company built on reliability, precision, and technical excellence. We support businesses nationwide with network engineering, infrastructure setup, system maintenance, and on-site technical response.
+                    {t('about.modern.desc')}
                   </p>
                 </div>
               </div>
@@ -117,13 +116,13 @@ export default function AboutUs() {
             {/* Contact Section */}
             <div className="bg-[#1E90FF]/5 rounded-lg p-4 border border-[#1E90FF]/10 text-center">
               <p className="text-[#E6F0FF]/80 text-sm mb-2">
-                Prefer a call? Contact the number below.
+                {t('about.contact.prefers')}
               </p>
               <p className="text-[#1E90FF] text-xl font-semibold">
                 +8210-6399-2185
               </p>
               <p className="text-[#E6F0FF]/50 text-xs mt-1">
-                We aim to fulfill your IT needs.
+                {t('about.contact.message')}
               </p>
             </div>
           </div>
@@ -133,7 +132,7 @@ export default function AboutUs() {
           onClick={() => setIsExpanded(!isExpanded)}
           className="bg-[#1E90FF] hover:bg-[#1E90FF]/80 text-white px-7 py-2.5 rounded-lg font-medium transition-all hover:scale-105 cursor-pointer text-sm inline-flex items-center gap-2"
         >
-          {isExpanded ? "See Less" : "See More"}
+          {isExpanded ? t('about.button.less') : t('about.button.more')}
           <svg 
             className={`w-4 h-4 transition-transform duration-300 ${isExpanded ? "rotate-180" : ""}`}
             fill="none" 
